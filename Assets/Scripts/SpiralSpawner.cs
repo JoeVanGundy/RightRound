@@ -19,6 +19,7 @@ public class SpiralSpawner : MonoBehaviour
     void Awake() {
          SetupInitialSpirals();
     }
+
     void SetupInitialSpirals()
     {
         for (int i=numberOfSpirals; i > 0; i--)

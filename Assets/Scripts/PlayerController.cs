@@ -12,6 +12,8 @@ public class PlayerController : MonoBehaviour
     public LayerMask groundLayers;
     public Rigidbody rb;
 
+    private bool playerJump = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -26,18 +28,21 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate() {
         transform.RotateAround(new Vector3(0,0,0), Vector3.down, rotateSpeed * Time.deltaTime);
-        if(Input.GetButtonDown("Jump")) {
+       
+        if(playerJump == true) {
+            playerJump = false;
             rb.velocity = Vector3.up * jumpVelocity;
         }
         if(rb.velocity.y < 0) {
             rb.velocity += Vector3.up * Physics.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
-        } else if (rb.velocity.y > 0 && !Input.GetButton("Jump")){
-            rb.velocity += Vector3.up * Physics.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;
         }
     }
 
     void Update()
     {
+        if(Input.GetButtonDown("Jump")) {
+            playerJump = true;
+        }
     }
 
 
