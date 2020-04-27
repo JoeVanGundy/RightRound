@@ -6,69 +6,59 @@ using UnityEngine;
 public class SpiralSpawner : MonoBehaviour
 {
     public GameObject spiral;
+    private float pillarHeight;
     public Queue<GameObject> spirals = new Queue<GameObject>();
-    public float yRotation = 0;
-    public int numberOfSpirals = 5;
+    public int numberOfSpirals;
+    public float spiralDownSpeed = 5f;
+    
     void Start()
     {
-        float repeatTime = spiral.transform.Find("Pillar").GetComponent<Renderer>().bounds.size.y/5;
-        // Hack: Invoke repeating was off by one frame. So wait one less frame than normal to start
-        InvokeRepeating("SpawnSpiral", repeatTime-Time.deltaTime, repeatTime);
-        
+        StartSpawning();
     }
     void Awake() {
-         SetupInitialSpirals();
+        pillarHeight = spiral.transform.Find("Pillar").GetComponent<Renderer>().bounds.size.y;
+        SetupInitialSpirals();
     }
 
     void SetupInitialSpirals()
     {
-        for (int i=numberOfSpirals; i > 0; i--)
+        for (int i=numberOfSpirals; i >= 1; i--)
         {
-            GameObject spawned = Instantiate(spiral, new Vector3(0, (-10*i) + 5, 0), Quaternion.identity);
-            Rigidbody rb = spawned.GetComponent<Rigidbody>();
-            rb.velocity = new Vector3(0, -5, 0);
-            spawned.transform.eulerAngles = new Vector3(
-                spawned.transform.eulerAngles.x,
-                yRotation,
-                spawned.transform.eulerAngles.z
-            );
-            spirals.Enqueue(spawned);
+            // GameObject newSpiral = Instantiate(spiral, new Vector3(0, (-pillarHeight*i) + (numberOfSpirals*pillarHeight - pillarHeight), 0), Quaternion.identity);
+            GameObject newSpiral = Instantiate(spiral, new Vector3(0, -pillarHeight*i + 15, 0), Quaternion.identity);
+
+            spirals.Enqueue(newSpiral);
         }
     }
 
     void SpawnSpiral()
     {
-        GameObject spawned = Instantiate(spiral, new Vector3(0, -5, 0), Quaternion.identity);
-        Rigidbody rb = spawned.GetComponent<Rigidbody>();
-        rb.velocity = new Vector3(0, -5, 0);
-        spawned.transform.eulerAngles = new Vector3(
-            spawned.transform.eulerAngles.x,
-            yRotation,
-            spawned.transform.eulerAngles.z
-        );
-        spirals.Enqueue(spawned);
-    }
-
-
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-        foreach (GameObject obj in spirals)
-        {
-            obj.transform.eulerAngles = new Vector3(
-                obj.transform.eulerAngles.x,
-                yRotation,
-                obj.transform.eulerAngles.z
-            );
-        }
-        if(yRotation >= 360) {
-            yRotation = 0;
-        }
-        yRotation += 1;
-
         if(spirals.Count >= numberOfSpirals) {
             GameObject obj = spirals.Dequeue();
             Destroy(obj);
         }
+        // Hack: The 0.1 syncs up the initial spirals to the new spawned ones. Spent 3 hours trying to fix. 
+        GameObject newSpiral = Instantiate(spiral, new Vector3(0,pillarHeight-0.1f, 0), Quaternion.identity);
+        Rigidbody rb = newSpiral.GetComponent<Rigidbody>();
+        // newSpiral.GetComponent<Animator>().enabled = true;
+        rb.velocity = new Vector3(0, -spiralDownSpeed, 0);
+        spirals.Enqueue(newSpiral);
+    }
+
+    void StartSpawning()
+    {
+        float repeatTime = 2f;
+        InvokeRepeating("SpawnSpiral", (repeatTime/2), repeatTime);
+        foreach (GameObject spiral in spirals)
+        {
+            // spiral.GetComponent<Animator>().enabled = true;
+            spiral.GetComponent<Rigidbody>().velocity = new Vector3(0, -spiralDownSpeed, 0);
+        }
+    }
+
+
+    // Update is called once per frame
+    void Update()
+    {
     }
 }

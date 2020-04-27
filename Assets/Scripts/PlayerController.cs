@@ -27,8 +27,6 @@ public class PlayerController : MonoBehaviour
     // }
 
     void FixedUpdate() {
-        transform.RotateAround(new Vector3(0,0,0), Vector3.down, rotateSpeed * Time.deltaTime);
-       
         if(playerJump == true) {
             playerJump = false;
             rb.velocity = Vector3.up * jumpVelocity;
@@ -40,6 +38,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        transform.RotateAround(new Vector3(0,0,0), Vector3.down, rotateSpeed * Time.deltaTime);
         if(Input.GetButtonDown("Jump")) {
             playerJump = true;
         }
