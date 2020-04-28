@@ -14,6 +14,8 @@ public class PlayerController : MonoBehaviour
 
     private bool playerJump = false;
 
+    private bool startGame = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,20 +29,27 @@ public class PlayerController : MonoBehaviour
     // }
 
     void FixedUpdate() {
-        if(playerJump == true) {
-            playerJump = false;
-            rb.velocity = Vector3.up * jumpVelocity;
-        }
-        if(rb.velocity.y < 0) {
-            rb.velocity += Vector3.up * Physics.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
+        if(startGame) {
+            if(playerJump == true) {
+                playerJump = false;
+                rb.velocity = Vector3.up * jumpVelocity;
+            }
+            if(rb.velocity.y < 0) {
+                rb.velocity += Vector3.up * Physics.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
+            }
         }
     }
 
     void Update()
     {
-        transform.RotateAround(new Vector3(0,0,0), Vector3.down, rotateSpeed * Time.deltaTime);
-        if(Input.GetButtonDown("Jump")) {
-            playerJump = true;
+        if(Input.GetButtonDown("Submit")) {
+            startGame = true;
+        }
+        if(startGame){
+            transform.RotateAround(new Vector3(0,0,0), Vector3.down, rotateSpeed * Time.deltaTime);
+            if(Input.GetButtonDown("Jump")) {
+                playerJump = true;
+            }
         }
     }
 
